@@ -526,6 +526,24 @@ func handleAction(action *Action, result ActionResult) {
 		}
 		result.success(publicKeys[0])
 		return
+	case getEasytierStatusMethod:
+		data, _ := action.Data.(string)
+		status, err := handleGetEasytierStatus(data)
+		if err != nil {
+			result.error(err)
+			return
+		}
+		result.success(status)
+		return
+	case startEasytierMethod:
+		data, _ := action.Data.(string)
+		status, err := handleStartEasytier(data)
+		if err != nil {
+			result.error(err)
+			return
+		}
+		result.success(status)
+		return
 	case crashMethod:
 		result.success(true)
 		handleCrash()

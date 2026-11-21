@@ -765,6 +765,50 @@ class ClashCore {
     return decoded is Map ? Map<String, Object?>.from(decoded) : {};
   }
 
+  Future<List<EasytierStatus>> getEasytierStatuses() async {
+    final value = await clashInterface.toolboxInvoke(
+      ActionMethod.getEasytierStatus,
+    );
+    if (value.trim().isEmpty) return const [];
+    final dynamic decoded;
+    try {
+      decoded = json.decode(value);
+    } on FormatException {
+      throw value;
+    }
+    if (decoded is String) throw decoded;
+    if (decoded is List) {
+      return [
+        for (final item in decoded)
+          if (item is Map)
+            EasytierStatus.fromJson(Map<String, Object?>.from(item)),
+      ];
+    }
+    if (decoded is Map) {
+      return [EasytierStatus.fromJson(Map<String, Object?>.from(decoded))];
+    }
+    return const [];
+  }
+
+  Future<EasytierStatus?> startEasytier(String name) async {
+    final value = await clashInterface.toolboxInvoke(
+      ActionMethod.startEasytier,
+      data: json.encode({'name': name}),
+    );
+    if (value.trim().isEmpty) return null;
+    final dynamic decoded;
+    try {
+      decoded = json.decode(value);
+    } on FormatException {
+      throw value;
+    }
+    if (decoded is String) throw decoded;
+    if (decoded is Map) {
+      return EasytierStatus.fromJson(Map<String, Object?>.from(decoded));
+    }
+    return null;
+  }
+
   Future<Map<String, Object?>> parseNodes(String text) =>
       _toolboxJson(ActionMethod.parseNodes, data: text);
 

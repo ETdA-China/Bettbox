@@ -316,6 +316,8 @@ enum ActionMethod {
   parseNodes,
   registerWarp,
   testNode,
+  getEasytierStatus,
+  startEasytier,
 
   ///Android,
   setState,

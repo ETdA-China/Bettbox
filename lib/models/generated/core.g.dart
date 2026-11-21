@@ -396,6 +396,8 @@ const _$ActionMethodEnumMap = {
   ActionMethod.parseNodes: 'parseNodes',
   ActionMethod.registerWarp: 'registerWarp',
   ActionMethod.testNode: 'testNode',
+  ActionMethod.getEasytierStatus: 'getEasytierStatus',
+  ActionMethod.startEasytier: 'startEasytier',
   ActionMethod.setState: 'setState',
   ActionMethod.startTun: 'startTun',
   ActionMethod.stopTun: 'stopTun',

@@ -151,6 +151,8 @@ const (
 	getAndroidVpnOptionsMethod           Method = "getAndroidVpnOptions"
 	getRunTimeMethod                     Method = "getRunTime"
 	getCurrentProfileNameMethod          Method = "getCurrentProfileName"
+	getEasytierStatusMethod              Method = "getEasytierStatus"
+	startEasytierMethod                  Method = "startEasytier"
 	crashMethod                          Method = "crash"
 	setupConfigMethod                    Method = "setupConfig"
 	getConfigMethod                      Method = "getConfig"

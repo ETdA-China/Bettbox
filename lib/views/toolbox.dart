@@ -178,6 +178,15 @@ List<_ToolItem> _buildTools() {
       ),
     ),
     _ToolItem(
+      id: 'easytier',
+      icon: Icons.account_tree_rounded,
+      color: const Color(0xFF00897B),
+      title: 'EasyTier 组网',
+      description: '查看虚拟网络节点状态',
+      size: _TileSize.wide,
+      open: (context) => push(context, const EasytierPage()),
+    ),
+    _ToolItem(
       id: 'trafficStats',
       icon: Icons.data_usage_rounded,
       color: const Color(0xFFAA47BC),

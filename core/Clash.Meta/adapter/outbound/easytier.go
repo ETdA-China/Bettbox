@@ -50,6 +50,7 @@ type EasyTier struct {
 	mu         sync.Mutex
 	host       *corehost.Host
 	instance   *corehost.Instance
+	lastErr    error
 	unregister func()
 }
 
@@ -231,6 +232,9 @@ func (e *EasyTier) loop() {
 		}
 		err := e.init()
 		if err != nil {
+			e.mu.Lock()
+			e.lastErr = err
+			e.mu.Unlock()
 			log.Warnln("[EasyTier](%s) start failed: %v; retry in %s", e.Name(), err, backoff)
 			_ = e.shutdown()
 			timer := time.NewTimer(backoff)
@@ -248,6 +252,9 @@ func (e *EasyTier) loop() {
 			}
 			continue
 		}
+		e.mu.Lock()
+		e.lastErr = nil
+		e.mu.Unlock()
 		backoff = easyTierMinBackoff
 		e.signalReady()
 		reason := e.serve()
@@ -502,6 +509,36 @@ func (e *EasyTier) ResolveUDP(ctx context.Context, metadata *C.Metadata) error {
 		return fmt.Errorf("easytier: overlay dial supports IPv4 only")
 	}
 	return nil
+}
+
+// EasytierStatus returns a read-only snapshot without starting the instance.
+func (e *EasyTier) EasytierStatus(ctx context.Context) (*easytier.Status, error) {
+	e.mu.Lock()
+	instance := e.instance
+	instanceID := e.instanceID
+	lastErr := e.lastErr
+	e.mu.Unlock()
+
+	state := "idle"
+	if instance != nil {
+		state = easytier.StateName(instance.State())
+	} else if lastErr != nil {
+		state = "error"
+	}
+	return easytier.BuildStatus(
+		ctx,
+		e.Name(),
+		state,
+		e.option.NetworkName,
+		instanceID,
+		instance,
+		lastErr,
+	), nil
+}
+
+// EasytierStart triggers the lazy EasyTier start and waits until it is running.
+func (e *EasyTier) EasytierStart(ctx context.Context) error {
+	return e.ensureStarted(ctx)
 }
 
 func (e *EasyTier) ProxyInfo() C.ProxyInfo {

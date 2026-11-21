@@ -50,10 +50,12 @@ dependencies {
     implementation("androidx.annotation:annotation-jvm:1.9.1")
 }
 
+val cleanNativeLibs by tasks.register<Delete>("cleanNativeLibs") {
+    delete(layout.projectDirectory.dir("src/main/jniLibs"))
+}
+
 val copyNativeLibs by tasks.register<Copy>("copyNativeLibs") {
-    doFirst {
-        delete("src/main/jniLibs")
-    }
+    dependsOn(cleanNativeLibs)
     from("../../libclash/android")
     into("src/main/jniLibs")
 }
