@@ -2,6 +2,16 @@ plugins {
     id("com.android.library")
 }
 
+val targetPlatform = (project.findProperty("target-platform") as String?)
+    ?.lowercase()
+    .orEmpty()
+val targetAbi = when {
+    targetPlatform.contains("android-arm64") -> "arm64-v8a"
+    targetPlatform.contains("android-x64") -> "x86_64"
+    targetPlatform.contains("android-arm") -> "armeabi-v7a"
+    else -> "arm64-v8a"
+}
+
 android {
     namespace = "com.appshub.bettbox.core"
     compileSdk = 36
@@ -9,6 +19,9 @@ android {
 
     defaultConfig {
         minSdk = 24
+        ndk {
+            abiFilters += targetAbi
+        }
     }
 
     buildTypes {
@@ -56,7 +69,9 @@ val cleanNativeLibs by tasks.register<Delete>("cleanNativeLibs") {
 
 val copyNativeLibs by tasks.register<Copy>("copyNativeLibs") {
     dependsOn(cleanNativeLibs)
-    from("../../libclash/android")
+    from("../../libclash/android") {
+        include("$targetAbi/**")
+    }
     into("src/main/jniLibs")
 }
 
